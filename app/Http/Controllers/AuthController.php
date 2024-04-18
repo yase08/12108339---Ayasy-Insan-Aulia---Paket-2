@@ -20,7 +20,7 @@ class AuthController extends Controller
 
         if ($user && Hash::check($request->password, $user->password)) {
             Auth::login($user);
-            return redirect('/dashboard');
+            return redirect('/dashboard')->with('success', 'Login Success');
         }
         return back()->with('fail', 'Username or Password Invalid');
     }
@@ -49,8 +49,7 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->role = "staff";
         $user->save();
-        Auth::login($user);
-        return redirect('/dashboard');
+        return redirect('/login')->with('success', 'Register Success');
     }
 
     public function logout()

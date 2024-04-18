@@ -15,7 +15,7 @@ class isStaff
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->user() && auth()->user()->role == 'admin') {
+        if (auth()->user() && auth()->user()->role == 'staff') {
             return $next($request);
         }
 

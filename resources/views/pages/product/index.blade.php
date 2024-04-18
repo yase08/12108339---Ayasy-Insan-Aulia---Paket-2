@@ -5,6 +5,28 @@
         <section class="section-header">
             <h1>Product</h1>
         </section>
+        @if (session('success'))
+            <div class="alert alert-danger alert-dismissible show fade">
+                <div class="alert-body">
+                    <button class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    <b>success:</b>
+                    {{ session('success') }}
+                </div>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible show fade">
+                <div class="alert-body">
+                    <button class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    <b>error:</b>
+                    {{ session('error') }}
+                </div>
+            </div>
+        @endif
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -35,21 +57,19 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $product->name }}</td>
-                                        <td>{{ $product->price }}</td>
+                                        <td>{{ number_format($product->price) }}</td>
                                         @if ($product->image == null)
                                             <td>No Image</td>
                                         @else
                                             <td><img src="{{ asset('images/' . $product->image) }}" width="50"></td>
                                         @endif
                                         <td>{{ $product->stock }}</td>
-                                        <td>
+                                        <td class="text-center d-flex">
                                             <a class="btn btn-warning btn-sm"
                                                 href="{{ route('product.edit', ['id' => $product->id]) }}"
                                                 class="btn btn-primary">Edit</a>
                                             <button type="button" class="btn btn-success btn-sm"
-                                                data-target="exampleModal{{ $product->id }}" data-toggle="modal"
-                                                data-bs-target="exampleModal{{ $product->id }}"
-                                                data-bs-toggle="modal">Update
+                                                data-target="#exampleModal{{ $product->id }}" data-toggle="modal">Update
                                                 Stock</button>
                                             <form action="{{ route('product.destroy', ['id' => $product->id]) }}"
                                                 method="POST">

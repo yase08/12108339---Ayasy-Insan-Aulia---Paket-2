@@ -1,6 +1,28 @@
 @extends('layouts.main')
 @section('content')
     <section class="section">
+        @if (session('fail'))
+            <div class="alert alert-danger alert-dismissible show fade">
+                <div class="alert-body">
+                    <button class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    <b>fail:</b>
+                    {{ session('fail') }}
+                </div>
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert alert-danger alert-dismissible show fade">
+                <div class="alert-body">
+                    <button class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    <b>success:</b>
+                    {{ session('success') }}
+                </div>
+            </div>
+        @endif
         <div class="container mt-5">
             <div class="row">
                 <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">

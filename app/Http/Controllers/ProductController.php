@@ -55,7 +55,7 @@ class ProductController extends Controller
         }
 
 
-        return redirect()->route('product');
+        return redirect()->route('product')->with('success', 'Product created successfully');
     }
 
     /**
@@ -83,7 +83,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'price' => $request->price,
         ]);
-        return redirect()->route('product');
+        return redirect()->route('product')->with('success', 'Product updated successfully');
     }
 
     /**
@@ -93,16 +93,15 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $product->delete();
-        return redirect()->route('product');
+        return redirect()->route('product')->with('success', 'Product deleted successfully');
     }
 
     public function updateStock(Request $request, $id)
     {
-        dd($request->all());
         $product = Product::find($id);
         $product->update([
             'stock' => $product->stock + $request->stock
         ]);
-        return redirect()->route('product');
+        return redirect()->route('product')->with('success', 'Stock updated successfully');
     }
 }

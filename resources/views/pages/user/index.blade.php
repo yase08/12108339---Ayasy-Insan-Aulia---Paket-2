@@ -36,15 +36,18 @@
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->role }}</td>
-                                        <td>
-                                            <a class="btn btn-warning btn-sm"
+                                        <td class="d-flex">
+                                            <a class="btn btn-warning btn-sm "
                                                 href="{{ route('user.edit', ['id' => $user->id]) }}"
                                                 class="btn btn-primary">Edit</a>
-                                            <form action="{{ route('user.destroy', ['id' => $user->id]) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
-                                            </form>
+                                            <div>
+                                                <form action="{{ route('user.destroy', ['id' => $user->id]) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

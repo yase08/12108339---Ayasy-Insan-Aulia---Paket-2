@@ -8,19 +8,18 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <form method="post" novalidate
-                        class="needs-validation">
+                    <form method="POST" novalidate class="needs-validation" action="{{ route('product.update', $product->id) }}">
                         @csrf
                         @method('PATCH')
                         <div class="card-header">
                             <h4>Edit Product</h4>
                         </div>
                         <div class="card-body">
-                            <div class="row">
+                            <div class="grid grid-cols-2">
                                 <div class="form-group">
                                     <label for="name">Name</label>
                                     <input type="text" class="form-control" name="name" id="name"
-                                        >
+                                        value="{{ $product->name }}">
                                     <div class="invalid-feedback">
                                         Please fill in your name
                                     </div>
@@ -28,12 +27,12 @@
                                 <div class="form-group">
                                     <label for="price">Price</label>
                                     <input type="text" class="form-control" name="price" id="price"
-                                        >
+                                        value="{{ $product->price }}">
                                     <div class="invalid-feedback">
                                         Please fill in your price
                                     </div>
                                 </div>
-                                <button class="btn btn-success">Create</button>
+                                <button class="btn btn-success">Update</button>
                                 <a href="{{ route('product') }}" class="btn btn-danger">Back</a>
                             </div>
                         </div>

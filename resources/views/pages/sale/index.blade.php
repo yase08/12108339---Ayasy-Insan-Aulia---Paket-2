@@ -5,6 +5,28 @@
         <section class="section-header">
             <h1>Sale</h1>
         </section>
+        @if (session('success'))
+            <div class="alert alert-danger alert-dismissible show fade">
+                <div class="alert-body">
+                    <button class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    <b>success:</b>
+                    {{ session('success') }}
+                </div>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible show fade">
+                <div class="alert-body">
+                    <button class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    <b>error:</b>
+                    {{ session('error') }}
+                </div>
+            </div>
+        @endif
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -15,11 +37,11 @@
                                 <div class="input-group-btn">
                                     <a href="/dashboard/sale/export" class="btn btn-success my-3" target="_blank">Export to
                                         Excel</a>
-                                    {{-- @if (Auth::user()->role == 'staff') --}}
-                                    <a href="{{ route('sale.create') }}" class="btn btn-primary"><i
-                                            class="fas fa-plus mr-2"></i>New
-                                        Sale</a>
-                                    {{-- @endif --}}
+                                    @if (Auth::user()->role == 'staff')
+                                        <a href="{{ route('sale.create') }}" class="btn btn-primary"><i
+                                                class="fas fa-plus mr-2"></i>New
+                                            Sale</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -43,15 +65,14 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $sale->customer->name }}</td>
                                             <td>{{ $sale->sale_date }}</td>
-                                            <td>{{ $sale->total_price }}</td>
+                                            <td>{{ number_format($sale->total_price) }}</td>
                                             <td>{{ $sale->user->name }}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-success btn-sm"
-                                                    data-target="exampleModal{{ $sale->id }}" data-toggle="modal"
-                                                    data-bs-target="exampleModal{{ $sale->id }}"
-                                                    data-bs-toggle="modal">Detail Sale</button>
+                                            <td class="d-flex">
+                                                <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                                    data-target="#exampleModal{{ $sale->id }}">Show Detail</button>
                                                 <a class="btn btn-warning btn-sm"
-                                                    href="{{ route('sale.download', ['id' => $sale->id]) }}">Download</a>
+                                                    href="{{ route('sale.download', ['id' => $sale->id]) }}"
+                                                    target="_blank">Download</a>
                                                 <form action="{{ route('sale.destroy', ['id' => $sale->id]) }}"
                                                     method="POST">
                                                     @csrf
@@ -70,45 +91,49 @@
             </div>
         </div>
     </section>
-    <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Detail Sale</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div>Customer Name: </div>
-                    <div>Customer Address: </div>
-                    <div>Customer Phone: </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Product Name</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th></th>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div>Total Price: Rp</div>
-                </div>
-                <div class="modal-footer bg-whitesmoke br">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        Close
-                    </button>
+    @foreach ($sales as $sale)
+        <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal{{ $sale->id }}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detail Sale {{ $sale->id }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div>Customer Name: {{ $sale->detailSale->first()->sale->customer->name }}</div>
+                        <div>Customer Address: {{ $sale->detailSale->first()->sale->customer->address }}</div>
+                        <div>Customer Phone: {{ $sale->detailSale->first()->sale->customer->phone }}</div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product Name</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($sale->detailSale as $item)
+                                    <tr>
+                                        <th>{{ $item->product->name }}</th>
+                                        <td>{{ $item->amount }}</td>
+                                        <td>Rp{{ number_format($item->product->price) }}</td>
+                                        <td>Rp{{ number_format($item->subtotal) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div>Total Price: Rp{{ number_format($sale->total_price) }}</div>
+                    </div>
+                    <div class="modal-footer bg-whitesmoke br">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endforeach
 @endsection

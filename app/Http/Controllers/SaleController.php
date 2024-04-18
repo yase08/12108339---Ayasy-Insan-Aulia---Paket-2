@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SaleExport;
 use App\Models\Customer;
 use App\Models\DetailSale;
 use App\Models\Product;
@@ -9,22 +10,15 @@ use App\Models\Sale;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SaleController extends Controller
 {
     public function invoice(Request $request)
     {
-        // foreach ($request->products as $productId) {
-        //     $product = Product::find($productId);
-        //     if ($request->quantities > $product->stock) {
-        //         return redirect()->back()->with("error", "Stock not enough");
-        //     }
-        //     $product->update([
-        //         'stock' => $product->stock - $request->quantities
-        //     ]);
-        // }
-        session(["data" => $request->all()]);
-        return view('pages.sale.invoice');
+        $data = session(["data" => $request->all()]);
+
+        return redirect()->route('sale.invoiceView');
     }
 
     public function invoiceView()
@@ -78,29 +72,27 @@ class SaleController extends Controller
         return $pdf->download('invoice.pdf');
     }
 
-    public function download($id)
+    public function download($saleId)
     {
-        $data = session("data");
+        $sale = Sale::with('detailSale.product')->find($saleId);
         $totalPrice = 0;
 
-        foreach ($data["products"] as $productId) {
-            $product = Product::find($productId);
-            $index = array_search($productId, $data["products"]);
-            $totalPrice += $product->price * $data["quantities"][$index];
-        }
+        $totalPrice = $sale->detailSale->reduce(function ($carry, $detail) {
+            return $carry + ($detail->product->price * $detail->amount);
+        });
 
-        foreach ($data["products"] as $productId) {
-            $product = Product::find($productId);
-            $index = array_search($productId, $data["products"]);
-            $detailSale[] = [
-                "name" => $product->name,
-                "quantity" => $data["quantities"][$index],
-                "price" => $product->price,
-                "subtotal" => $product->price * $data["quantities"][$index]
+        $detailSale = $sale->detailSale->map(function ($detail) {
+            return [
+                'name' => $detail->product ? $detail->product->name : 'N/A',
+                'price' => $detail->product->price,
+                'quantity' => $detail->amount,
+                'subtotal' => $detail->product->price * $detail->amount,
             ];
-        }
+        })->toArray();
 
-        return view('pages.sale.pdf', compact('data', 'totalPrice', 'detailSale'));
+        $pdf = Pdf::loadView('pages.sale.pdfdownload', compact('totalPrice', 'sale', 'detailSale'));
+
+        return $pdf->download("invoice-{$saleId}.pdf");
     }
 
     /**
@@ -108,8 +100,11 @@ class SaleController extends Controller
      */
     public function index()
     {
-        $sales = Sale::all();
-
+        if (Auth::user()->role == "admin") {
+            $sales = Sale::all();
+        } else {
+            $sales = Sale::where("user_id", Auth::user()->id)->get();
+        }
         return view('pages.sale.index', compact('sales'));
     }
 
@@ -125,10 +120,18 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store()
     {
         $data = session("data");
         $totalPrice = 0;
+
+        foreach ($data["products"] as $productId) {
+            $product = Product::find($productId);
+            $index = array_search($productId, $data["products"]);
+            if ($product->stock < $data["quantities"][$index]) {
+                return redirect()->back()->with("error", "Stock not enough");
+            }
+        }
 
         foreach ($data["products"] as $productId) {
             $product = Product::find($productId);
@@ -152,15 +155,24 @@ class SaleController extends Controller
         foreach ($data["products"] as $productId) {
             $product = Product::find($productId);
             $index = array_search($productId, $data["products"]);
+            $product->update([
+                "stock"  => $product->stock - $data["quantities"][$index],
+            ]);
+
             DetailSale::create([
                 "sale_id" => $newSale->id,
                 "product_id" => $product->id,
-                "amount" => $product->price,
+                "amount" => $data["quantities"][$index],
                 "subtotal" => $product->price * $data["quantities"][$index],
             ]);
         }
 
-        return redirect()->route('sale');
+        return redirect()->route('sale')->with("success", "Data created successfully");
+    }
+
+    public function Export()
+    {
+        return Excel::download(new SaleExport, 'sales.xlsx');
     }
 
     /**
@@ -188,7 +200,7 @@ class SaleController extends Controller
             'name' => $request->name,
             'price' => $request->price,
         ]);
-        return redirect()->route('sale');
+        return redirect()->route('sale')->with("success", "Data updated successfully");
     }
 
     /**
@@ -198,7 +210,7 @@ class SaleController extends Controller
     {
         $sale = Sale::find($id);
         $sale->delete();
-        return redirect()->route('sale');
+        return redirect()->route('sale')->with("success", "Data deleted successfully");
     }
 
     public function updateStock(Request $request, $id)
@@ -208,6 +220,6 @@ class SaleController extends Controller
         $sale->update([
             'stock' => $sale->stock + $request->stock
         ]);
-        return redirect()->route('sale');
+        return redirect()->route('sale')->with("success", "Stock updated successfully");
     }
 }

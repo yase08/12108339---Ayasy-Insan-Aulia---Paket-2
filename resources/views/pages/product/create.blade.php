@@ -15,7 +15,7 @@
                             <h4>Input Product</h4>
                         </div>
                         <div class="card-body">
-                            <div class="row">
+                            <div class="grid grid-cols-2">
                                 <div class="form-group">
                                     <label for="name">Name</label>
                                     <input type="text" class="form-control" name="name" id="name" required>
