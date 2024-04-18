@@ -6,7 +6,7 @@
             <h1>Sale</h1>
         </section>
         @if (session('success'))
-            <div class="alert alert-danger alert-dismissible show fade">
+            <div class="alert alert-success alert-dismissible show fade">
                 <div class="alert-body">
                     <button class="close" data-dismiss="alert">
                         <span>&times;</span>
@@ -126,6 +126,8 @@
                             </tbody>
                         </table>
                         <div>Total Price: Rp{{ number_format($sale->total_price) }}</div>
+                        <div>Paid Amount: Rp{{ number_format($sale->paid_amount) }}</div>
+                        <div>Return: Rp{{ number_format($sale->paid_amount - $sale->total_price) }}</div>
                     </div>
                     <div class="modal-footer bg-whitesmoke br">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">

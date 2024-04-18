@@ -119,11 +119,11 @@
                     </tr>
                     @foreach ($detailSale as $item)
                         <tr>
-                            <td>{{ $item["name"] }}</td>
-                            <td>{{ $item["quantity"] }}</td>
-                            <td>Rp {{ $item["price"] }}</td>
+                            <td>{{ $item['name'] }}</td>
+                            <td>{{ $item['quantity'] }}</td>
+                            <td>Rp {{ $item['price'] }}</td>
                             </td>
-                            <td>Rp {{ $item["subtotal"] }}</td>
+                            <td>Rp {{ $item['subtotal'] }}</td>
                             </td>
                         </tr>
                     @endforeach
@@ -135,6 +135,26 @@
                         </td>
                         <td>
                             <h2>Rp {{ $totalPrice }}</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <h2>Paid Amount</h2>
+                        </td>
+                        <td>
+                            <h2>Rp {{ $sale->paid_amount }}</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <h2>Return</h2>
+                        </td>
+                        <td>
+                            <h2>Rp {{ $sale->paid_amount - $totalPrice }}</h2>
                         </td>
                     </tr>
                 </table>

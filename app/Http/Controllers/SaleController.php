@@ -120,7 +120,7 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store(Request $request)
     {
         $data = session("data");
         $totalPrice = 0;
@@ -150,6 +150,8 @@ class SaleController extends Controller
             "user_id" => Auth::user()->id,
             "sale_date" => date("Y-m-d H:i:s"),
             "total_price" => $totalPrice,
+            "paid_amount" => $request->amount,
+            "sale_amount" => $request->amount - $totalPrice
         ]);
 
         foreach ($data["products"] as $productId) {

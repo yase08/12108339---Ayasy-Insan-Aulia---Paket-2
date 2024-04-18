@@ -47,11 +47,36 @@
             </table>
             <div class="mb-3">Total Price: Rp {{ number_format($totalPrice) }}</div>
             <div class="d-flex justify-content-between">
-                <a href="{{ route('sale') }}" class="btn btn-primary">Cancel</a>
-                <form action="{{ route('sale.store') }}" method="post">
-                    @csrf
-                    <button class="btn btn-primary" type="submit">Confirm</button>
-                </form>
+                <div>
+                    <form action="{{ route('sale.store') }}" method="post" class="d-flex justify-content-end w-full">
+                        @csrf
+                        <a href="{{ route('sale') }}" class="btn btn-primary">Cancel</a>
+                        <button class="btn btn-primary" type="button" class="btn btn-primary" data-toggle="modal"
+                            data-target="#exampleModal">Pay</button>
+                        <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fs-5" id="exampleModalLabel">Payment</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="amount">Pay Amount</label>
+                                            <input type="number" class="form-control" name="amount" id="amount"
+                                                required>
+                                            <div class="invalid-feedback">
+                                                Please fill in your stock
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" type="submit">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

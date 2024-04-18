@@ -12,9 +12,9 @@
             @if (Auth::user()->role == 'admin')
                 <li class="{{ Request::is('dashboard/user*') ? 'active' : '' }}"><a class="nav-link"
                         href="{{ route('user') }}"><i class="fas fa-user"></i> <span>User</span></a></li>
-                <li class="{{ Request::is('dashboard/product*') ? 'active' : '' }}"><a class="nav-link"
-                        href="{{ route('product') }}"><i class="fas fa-box"></i> <span>Product</span></a></li>
             @endif
+            <li class="{{ Request::is('dashboard/product*') ? 'active' : '' }}"><a class="nav-link"
+                    href="{{ route('product') }}"><i class="fas fa-box"></i> <span>Product</span></a></li>
             <li class="{{ Request::is('dashboard/sale*') ? 'active' : '' }}"><a class="nav-link"
                     href="{{ route('sale') }}"><i class="fas fa-shopping-cart"></i> <span>Sale</span></a></li>
             </li>

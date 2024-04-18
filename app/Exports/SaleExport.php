@@ -13,7 +13,7 @@ class SaleExport implements FromCollection, WithHeadings, WithMapping, WithColum
 {
     public function collection()
     {
-        return DetailSale::selectRaw('sales.id, customers.name as customer_name, customers.address as customer_address, customers.phone as customer_phone, sales.sale_date, sales.total_price, users.name as user_name, products.name as product_name, products.price as product_price, detail_sales.amount, detail_sales.amount * products.price as subtotal')
+        return DetailSale::selectRaw('sales.id, customers.name as customer_name, customers.address as customer_address, customers.phone as customer_phone, sales.sale_date, sales.paid_amount, sales.total_price, users.name as user_name, products.name as product_name, products.price as product_price, detail_sales.amount, detail_sales.amount * products.price as subtotal')
             ->join('sales', 'detail_sales.sale_id', '=', 'sales.id')
             ->join('customers', 'sales.customer_id', '=', 'customers.id')
             ->join('users', 'sales.user_id', '=', 'users.id')
@@ -34,6 +34,8 @@ class SaleExport implements FromCollection, WithHeadings, WithMapping, WithColum
             'Rp ' . number_format($sale->product_price, 2, '.', ','),
             'Rp ' . number_format($sale->subtotal, 2, '.', ','),
             $sale->sale_date,
+            $sale->paid_amount,
+            $sale->paid_amount - $sale->total_price,
             $sale->user_name,
         ];
     }
@@ -49,6 +51,8 @@ class SaleExport implements FromCollection, WithHeadings, WithMapping, WithColum
             'Product Price',
             'Subtotal',
             'Sale Date',
+            'Paid Amount',
+            'Return',
             'Created By',
         ];
     }

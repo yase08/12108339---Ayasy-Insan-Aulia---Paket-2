@@ -34,11 +34,13 @@
                         <h3>Product List</h3>
                         <div class="card-header-form">
                             <div class="input-group">
-                                <div class="input-group-btn">
-                                    <a class="btn btn-primary" href="{{ route('product.create') }}"><i
-                                            class="fas fa-plus mr-2"></i>New
-                                        Product</a>
-                                </div>
+                                @if (Auth::user()->role === 'admin')
+                                    <div class="input-group-btn">
+                                        <a class="btn btn-primary" href="{{ route('product.create') }}"><i
+                                                class="fas fa-plus mr-2"></i>New
+                                            Product</a>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -51,7 +53,9 @@
                                     <th>Price</th>
                                     <th>Image</th>
                                     <th>Stock</th>
-                                    <th>Action</th>
+                                    @if (Auth::user()->role === 'admin')
+                                        <th>Action</th>
+                                    @endif
                                 </tr>
                                 @foreach ($products as $product)
                                     <tr>
@@ -64,21 +68,24 @@
                                             <td><img src="{{ asset('images/' . $product->image) }}" width="50"></td>
                                         @endif
                                         <td>{{ $product->stock }}</td>
-                                        <td class="text-center d-flex">
-                                            <a class="btn btn-warning btn-sm"
-                                                href="{{ route('product.edit', ['id' => $product->id]) }}"
-                                                class="btn btn-primary">Edit</a>
-                                            <button type="button" class="btn btn-success btn-sm"
-                                                data-target="#exampleModal{{ $product->id }}" data-toggle="modal">Update
-                                                Stock</button>
-                                            <form action="{{ route('product.destroy', ['id' => $product->id]) }}"
-                                                method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">
-                                                    Delete</button>
-                                            </form>
-                                        </td>
+                                        @if (Auth::user()->role === 'admin')
+                                            <td class="text-center d-flex">
+                                                <a class="btn btn-warning btn-sm"
+                                                    href="{{ route('product.edit', ['id' => $product->id]) }}"
+                                                    class="btn btn-primary">Edit</a>
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                    data-target="#exampleModal{{ $product->id }}"
+                                                    data-toggle="modal">Update
+                                                    Stock</button>
+                                                <form action="{{ route('product.destroy', ['id' => $product->id]) }}"
+                                                    method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        Delete</button>
+                                                </form>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </table>

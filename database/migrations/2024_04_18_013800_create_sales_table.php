@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('user_id');
-            
+
             $table->id();
             $table->date('sale_date');
             $table->double('total_price', 8, 2);
+            $table->double("paid_amount", 8, 2);
+            $table->double("sale_amount", 8, 2);
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
